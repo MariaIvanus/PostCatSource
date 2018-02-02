@@ -75,7 +75,10 @@ public class GameController : MonoBehaviour {
 
     void NextSection() {
         Debug.Log("nextSect");
-        DestroyObject(prevLevelSection);
+        //DestroyObject(prevLevelSection);
+        if (prevLevelSection != null) { 
+            prevLevelSection.SetActive(false);
+        }
         prevLevelSection = curLevelSection;
         curLevelSection = nextLevelSection;
         float LevelPositionX = curLevelSection.GetComponent<Collider2D>().bounds.size.x + curLevelSection.transform.position.x + 0.1f;
@@ -86,7 +89,8 @@ public class GameController : MonoBehaviour {
         level++;
         Debug.Log("You cool" + level.ToString());
         CheckPointController.playerRichCheckPoint -= this.NextLevel;
-        DestroyObject(prevLevelSection);
+        //DestroyObject(prevLevelSection);
+        prevLevelSection.SetActive(false);
         prevLevelSection = curLevelSection;
         curLevelSection = nextLevelSection;
         nextLevelSection = checkpoint;

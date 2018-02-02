@@ -40,41 +40,38 @@ public class Postcat : MonoBehaviour {
 
 		animator.SetFloat("horizontal", h);
 		animator.SetFloat("vertical", v);
-		
-		if (fuel > 0) {
-			
-			if (transform.position.y >= yBound) {
-				rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
-				rb.AddForce(Vector3.up * -reboundForce);
-			}
-			else if (transform.position.y <= -yBound) {
-				rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
-				rb.AddForce(Vector3.up * reboundForce);
-			}
-			else {
-				rb.AddForce(movement * speedScale);
-			}
 
-			rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
-			
-            
+        if (fuel > 0) {
+
+            if (transform.position.y >= yBound) {
+                rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
+                rb.AddForce(Vector3.up * -reboundForce);
+            } else if (transform.position.y <= -yBound) {
+                rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
+                rb.AddForce(Vector3.up * reboundForce);
+            } else {
+                rb.AddForce(movement * speedScale);
+            }
+
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+        }
+            /* Надо логикой топлива еще нужно поработать отдельно, его нельзя подбирать, не восполняется со временем!(а должно) Геймовер не наступает.
+             * И игрок должен все время двигаться, просто с минимальной скоростью, топливо для рывка и ускорения.
 			if (movement.magnitude > 0)
 				fuel -= consumption;
-		}
-        // TODO: Uncomment when fixed
-        //else
-        //   gameController.GameOver();
+            else
+                gameController.GameOver();*/
 
     }
 
 
     public void ApplyDamage(float damage) {
-		fuel -= damage;
+		//fuel -= damage;
 	}
 
 
 	public void Refuel(float fuelAmount) {
-		fuel += fuelAmount;        
+		//fuel += fuelAmount;        
 	}
 
 
