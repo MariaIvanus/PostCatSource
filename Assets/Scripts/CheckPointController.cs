@@ -11,26 +11,23 @@ public class CheckPointController : MonoBehaviour {
     public delegate void OnCheckPointHandler();
     public static event OnCheckPointHandler playerRichCheckPoint;
 
+   // GameObject gameController;
 
+    private void Start() {
+        //gameController.
+    }
     public void OnTriggerEnter2D(Collider2D collision) {
+
         //Debug.Log("chek");
         if (collision.gameObject.CompareTag("Player")) {
-            Debug.Log("chek");
+            Debug.Log("rich somehow");
+            //GameObject.Find("GameController").GetComponent<GameController>().NextLevel();
             if (playerRichCheckPoint != null) {
                 playerRichCheckPoint();
             }
-
-            //MainGameController go = GameObject.Find("GameControler").GetComponent<MainGameController>();
-            //go.
-            //go.NextLevel();
-            
-            //go.GetComponent<MainGameController>().NextLevel();
         }
     }
-    public void OnTriggerExit2D(Collider2D collision) {
-        //if (collision.gameObject.CompareTag("Player")) {
-           // DestroyObject(gameObject);
-        //}/
+    public void Destroy() {
+        Destroy(gameObject);
     }
-    
 }

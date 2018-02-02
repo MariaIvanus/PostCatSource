@@ -1283,10 +1283,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73cd9b16cd08347b78d8e2fbfa87dd5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fuel: 100
+  fuelBar: {fileID: 114408943389257994, guid: 210f936b0729cf943a4c7ee161de0dc8, type: 2}
   speedScale: 10
   maxSpeed: 10
   consumption: 0.1
-  fuel: 100
+  jumpForce: 10
   yBound: 10
   reboundForce: 20
   clampVelScale: 1

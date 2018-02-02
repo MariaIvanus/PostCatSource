@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class GameController : MonoBehaviour {
@@ -17,13 +17,14 @@ public class GameController : MonoBehaviour {
 	//private Vector3 lastSectionRoot;
 
     int level = 0;
+    Text levelText;
     int levelSectionAdded;
     int levelSectionMax;
-    GameObject prevLevelSection;
-    GameObject curLevelSection;
-    GameObject nextLevelSection;
-    GameObject postcatObj;
-    GameObject checkpoint;
+    public GameObject prevLevelSection;
+    public GameObject curLevelSection;
+    public GameObject nextLevelSection;
+    public GameObject postcatObj;
+    public GameObject checkpoint;
     public Transform postcatPrefab;
     public Transform postcatPrefabWithCargo;
     public Transform levelSectionPrefab;
@@ -33,81 +34,225 @@ public class GameController : MonoBehaviour {
     public GameObject winUI;
 
     void Start() {
+        
+        StartGame();
+
+    }
+
+    void StartGame() {
+        levelText = GameObject.Find("levelText").GetComponent<Text>();
         InstantiateFisrtsCheckPoint();
         InstantiatePostcatNoRope();
+
         prevLevelSection = null;
         curLevelSection = checkpoint;
+        if (curLevelSection == null) {
+            Debug.Log("dgfdg");
+        } else {
+            Debug.Log("NotificationServices null");
+        }
+        //curLevelSection = GameObject.Find("che")
         SetupLevel();
     }
+
     void InstantiateFisrtsCheckPoint() {
         checkpoint = Instantiate(
             checkPointPrefab,
-            new Vector3(1f, 1f, 0f),
+            new Vector3(0f, 0f, 0f),
             Quaternion.identity).gameObject;
     }
+
     void InstantiatePostcatNoRope() {
         postcatObj = Instantiate(
             postcatPrefab,
             checkpoint.transform.position,
             checkpoint.transform.rotation).gameObject;
         Camera.main.GetComponent<CameraController>().target = postcatObj.transform;
+        postcatObj.GetComponent<Rigidbody2D>().AddForce(Vector3.right * 20.0f, ForceMode2D.Impulse);
     }
 
     void SetupLevel() {
+
+
         LevelSpec temp_lv = new LevelSpec(level);
         levelSectionMax = temp_lv.maxSectionNumber;
-        Debug.Log(temp_lv.maxSectionNumber.ToString());
+        Debug.Log(levelSectionMax.ToString() + "max");
+        levelText.text = level.ToString();
+        Debug.Log(level.ToString() + "min");
+
         if (prevLevelSection != null) {
             NextSection();
+            Debug.Log("next");
         } else {
             InstantiateSection();
+            Debug.Log("инст");
         }
-        levelSectionAdded = 1;
+
+        
         LSController.playerEnterSection += this.NextSection;
 
     }
-    void InstantiateSection() {
-        float SectionPositionX = curLevelSection.transform.position.x;
-        float SectionWidthX = curLevelSection.GetComponent<BoxCollider2D>().bounds.size.x;
-        nextLevelSection = Instantiate(levelSectionPrefab, new Vector3(SectionPositionX + SectionWidthX, 1f, 0f), Quaternion.identity).gameObject;
 
+    void InstantiateSection() {
+        float LevelPositionX = curLevelSection.GetComponent<Collider2D>().bounds.size.x + curLevelSection.transform.position.x;
+        nextLevelSection = Instantiate(levelSectionPrefab, new Vector3(LevelPositionX, 0f, 0f), Quaternion.identity).gameObject;
+        levelSectionAdded++;
+        Debug.Log("levelSectionAdded" + levelSectionAdded);
     }
 
     void NextSection() {
-        Debug.Log("nextSect");
-        //DestroyObject(prevLevelSection);
-        if (prevLevelSection != null) { 
-            prevLevelSection.SetActive(false);
+        if (levelSectionAdded == levelSectionMax) {
+            Debug.Log("WHATlevelSectionAdded" + levelSectionAdded);
+            levelSectionAdded = 0;
+
+            LSController.playerEnterSection -= this.NextSection;
+            DrawCheckPoint();
+        } else { 
+            if (prevLevelSection != null) {
+                //prevLevelSection.SetActive(false);
+                //prevLevelSection.GetComponent<LSController>().Destroy();
+                Destroy(prevLevelSection);
+            }
+            prevLevelSection = curLevelSection;
+            curLevelSection = nextLevelSection;
+            
+
+            float LevelPositionX = curLevelSection.GetComponent<Collider2D>().bounds.size.x + curLevelSection.transform.position.x;
+            nextLevelSection = Instantiate(levelSectionPrefab, new Vector3(LevelPositionX, 0f, 0f), Quaternion.identity).gameObject;
+            levelSectionAdded++;
+            Debug.Log("levelSectionAdded" + levelSectionAdded);
         }
-        prevLevelSection = curLevelSection;
-        curLevelSection = nextLevelSection;
-        float LevelPositionX = curLevelSection.GetComponent<Collider2D>().bounds.size.x + curLevelSection.transform.position.x + 0.1f;
-        nextLevelSection = Instantiate(levelSectionPrefab, new Vector3(LevelPositionX, 1f, 0f), Quaternion.identity).gameObject;
-        levelSectionAdded++;
     }
     public void NextLevel() {
-        level++;
-        Debug.Log("You cool" + level.ToString());
-        CheckPointController.playerRichCheckPoint -= this.NextLevel;
-        //DestroyObject(prevLevelSection);
-        prevLevelSection.SetActive(false);
+       // if (prevLevelSection != null) {
+            level++;
+            Debug.Log("You cool" + level.ToString());
+            CheckPointController.playerRichCheckPoint -= this.NextLevel;
+        Destroy(prevLevelSection);
+        //prevLevelSection.GetComponent<LSController>().Destroy();
         prevLevelSection = curLevelSection;
-        curLevelSection = nextLevelSection;
-        nextLevelSection = checkpoint;
-        SetupLevel();
+            curLevelSection = nextLevelSection;
+            nextLevelSection = checkpoint;
+            SetupLevel();
+        //}
     }
-    private void FixedUpdate() {
-        if (levelSectionAdded == levelSectionMax) {
-            levelSectionAdded++;
-            DrawCheckPoint();
+
+    void DrawCheckPoint() {
+        //Debug.Log(levelSectionMax.ToString() + " " + levelSectionAdded.ToString());
+        float LevelPositionX = nextLevelSection.GetComponent<Collider2D>().bounds.size.x + nextLevelSection.transform.position.x;
+        checkpoint = Instantiate(checkPointPrefab, new Vector3(LevelPositionX, 0f, 0), Quaternion.identity).gameObject;
+      
+        CheckPointController.playerRichCheckPoint += this.NextLevel;
+       // Debug.Log("start listen playerRichCheckPoint ");
+    }
+
+
+
+    public void GameOver() {
+        Debug.Log("Game Over");
+        // TODO: Play sound
+       // PauseOn();
+        if (gameOverUI != null) { 
+            gameOverUI.SetActive(true);
+        }
+        //PauseOff();
+    }
+
+    private void Destroy(GameObject toDestroy) {
+        if(toDestroy != null) {
+            Debug.Log(toDestroy.tag + toDestroy.name);
+            if (toDestroy.tag == "checkpoint") {
+                toDestroy.GetComponent<CheckPointController>().Destroy();
+            } else if (toDestroy.tag == "LevelSection") {
+                toDestroy.GetComponent<LSController>().Destroy();
+            } else if (toDestroy.tag == "Player") {
+                toDestroy.GetComponent<Postcat>().Destroy();
+            }
+        } else {
+            Debug.Log("its null");
         }
     }
-    void DrawCheckPoint() {
-        float LevelPositionX = nextLevelSection.GetComponent<Collider2D>().bounds.size.x + nextLevelSection.transform.position.x;
-        checkpoint = Instantiate(checkPointPrefab, new Vector3(LevelPositionX, 1f, 0), Quaternion.identity).gameObject;
+    public void Restart() {
+        PauseOn();
+        levelSectionAdded = 0;
         LSController.playerEnterSection -= this.NextSection;
-        CheckPointController.playerRichCheckPoint += this.NextLevel;
+        CheckPointController.playerRichCheckPoint -= this.NextLevel;
+
+        prevLevelSection = GameObject.Find("GameController").GetComponent<GameController>().prevLevelSection;
+        Destroy(prevLevelSection);
+        curLevelSection = GameObject.Find("GameController").GetComponent<GameController>().curLevelSection;
+        Destroy(curLevelSection);
+        nextLevelSection = GameObject.Find("GameController").GetComponent<GameController>().nextLevelSection;
+        Destroy(nextLevelSection);
+
+        checkpoint = GameObject.Find("GameController").GetComponent<GameController>().checkpoint;
+        if (checkpoint == null) {
+            InstantiateFisrtsCheckPoint();
+        } else {
+            checkpoint.transform.position = new Vector3(0f, 0f, 0f);
+        }
+
+        curLevelSection = checkpoint;
+        postcatObj = GameObject.Find("GameController").GetComponent<GameController>().postcatObj;
+        Destroy(postcatObj);
+        InstantiatePostcatNoRope();
+
+        nextLevelSection = GameObject.Find("GameController").GetComponent<GameController>().nextLevelSection;
+        if (nextLevelSection == null) {
+            InstantiateSection(); 
+        } else {
+            nextLevelSection.transform.position = new Vector3(curLevelSection.GetComponent<Collider2D>().bounds.size.x + curLevelSection.transform.position.x, 0f, 0f);
+            levelSectionAdded++;
+        }
+
+        
+        /*Destroy(prevLevelSection);
+        Destroy(curLevelSection);
+        Destroy(nextLevelSection);
+
+        checkpoint = GameObject.Find("GameController").GetComponent<GameController>().checkpoint;
+        if (checkpoint != null)
+            Destroy(checkpoint);
+        postcatObj = GameObject.Find("GameController").GetComponent<GameController>().postcatObj;
+        Destroy(postcatObj);
+        */
+        if (gameOverUI != null) {
+            gameOverUI.SetActive(false);
+        }
+
+        //StartGame();
+        PauseOff();
     }
+    /*public void Restart() {
+        PauseOn();
+        levelSectionAdded = 0;
+
+        LSController.playerEnterSection -= this.NextSection;
+        CheckPointController.playerRichCheckPoint -= this.NextLevel;
+
+        prevLevelSection = GameObject.Find("GameController").GetComponent<GameController>().prevLevelSection;
+        curLevelSection = GameObject.Find("GameController").GetComponent<GameController>().curLevelSection;
+        nextLevelSection = GameObject.Find("GameController").GetComponent<GameController>().nextLevelSection;
+        Destroy(prevLevelSection);
+        Destroy(curLevelSection);
+        Destroy(nextLevelSection);
+
+        checkpoint = GameObject.Find("GameController").GetComponent<GameController>().checkpoint;
+        if (checkpoint != null)
+            Destroy(checkpoint);
+        postcatObj = GameObject.Find("GameController").GetComponent<GameController>().postcatObj;
+        Destroy(postcatObj); 
+
+        if (gameOverUI != null) {
+            gameOverUI.SetActive(false);
+        }
+        
+        StartGame();
+        PauseOff();
+    }*/
+
+
+
 
 
     private bool isPaused;

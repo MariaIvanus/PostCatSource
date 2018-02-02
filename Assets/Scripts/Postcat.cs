@@ -1,14 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class Postcat : MonoBehaviour {
 
-	public float speedScale = 400.0f;
+    //public float health = 100f; //from 0 to 1,
+    //public Slider heathBar;
+
+    public float startfuel = 100.0f;
+    private float currentfuel;
+    public Slider fuelBar;
+
+    public float speedScale = 10.0f;
 	public float maxSpeed = 10.0f;
 	public float consumption = 0.1f;
-	public float fuel = 100.0f;
 	public float jumpForce = 10.0f;
 
 	public float yBound = 8.0f;
@@ -21,8 +28,10 @@ public class Postcat : MonoBehaviour {
 
 
 	void Awake() {
+        currentfuel = startfuel;
+        fuelBar = GameObject.Find("FuelBar").GetComponent<Slider>();
 
-		rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
 		animator = GetComponentInChildren<Animator>();
 		gameController = GameObject
 			.Find("GameController")
@@ -41,12 +50,16 @@ public class Postcat : MonoBehaviour {
 		animator.SetFloat("horizontal", h);
 		animator.SetFloat("vertical", v);
 
-        if (fuel > 0) {
+        //EngineSoundHandler();
+
+        if (currentfuel > 0) {
 
             if (transform.position.y >= yBound) {
+               // Debug.Log(transform.position.y);
                 rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
                 rb.AddForce(Vector3.up * -reboundForce);
             } else if (transform.position.y <= -yBound) {
+                // Debug.Log(transform.position.y);
                 rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
                 rb.AddForce(Vector3.up * reboundForce);
             } else {
@@ -54,24 +67,81 @@ public class Postcat : MonoBehaviour {
             }
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+
+            if (movement.magnitude > 0) {
+               // currentfuel -= consumption;
+                fuelBar.value = currentfuel;
+                //Debug.Log(fuel.ToString() + " " + fuelBar.value.ToString());
+            }
+
+        } else {
+            gameController.GameOver();
+           // currentfuel = startfuel;
         }
-            /* Надо логикой топлива еще нужно поработать отдельно, его нельзя подбирать, не восполняется со временем!(а должно) Геймовер не наступает.
-             * И игрок должен все время двигаться, просто с минимальной скоростью, топливо для рывка и ускорения.
-			if (movement.magnitude > 0)
-				fuel -= consumption;
-            else
-                gameController.GameOver();*/
+        /*If no btn pressed - restore fuel
+        if(h==0 && v ==0) {
+            fuel += 0.01f * Time.deltaTime;
+        }*/
+
+        /* Надо логикой топлива еще нужно поработать отдельно, его нельзя подбирать, не восполняется со временем!(а должно) Геймовер не наступает.
+         * И игрок должен все время двигаться, просто с минимальной скоростью, топливо для рывка и ускорения.
+        if (movement.magnitude > 0)
+            fuel -= consumption;
+        else
+            gameController.GameOver();*/
 
     }
 
+    private void EngineSoundHandler() {
+        // Звук двигателя
+        if (Input.GetKeyDown(KeyCode.W)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+        }
+        if (Input.GetKeyDown(KeyCode.S)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+        }
+        if (Input.GetKeyDown(KeyCode.D)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            FindObjectOfType<AudioManager>().Play("engine");
+
+        }
+        if (Input.GetKeyUp(KeyCode.W)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+        if (Input.GetKeyUp(KeyCode.S)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+        if (Input.GetKeyUp(KeyCode.D)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+        if (Input.GetKeyUp(KeyCode.UpArrow)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+        if (Input.GetKeyUp(KeyCode.DownArrow)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+        if (Input.GetKeyUp(KeyCode.RightArrow)) {
+            FindObjectOfType<AudioManager>().Stop("engine");
+        }
+    }
 
     public void ApplyDamage(float damage) {
-		//fuel -= damage;
-	}
+		currentfuel -= damage;
+        fuelBar.value = currentfuel;
+ 
+    }
 
 
 	public void Refuel(float fuelAmount) {
-		//fuel += fuelAmount;        
+		currentfuel += fuelAmount;        
 	}
 
 
@@ -84,5 +154,10 @@ public class Postcat : MonoBehaviour {
 	public void Crash() {
 		rb.AddForce(Vector3.left * 5.0f, ForceMode2D.Impulse);
 		animator.SetTrigger("Crash");
-	}
+        //FindObjectOfType<AudioManager>().Play("hitAsteroid");
+    }
+
+    public void Destroy() {
+        Destroy(gameObject);
+    }
 }

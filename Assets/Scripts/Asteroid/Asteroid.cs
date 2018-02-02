@@ -28,8 +28,8 @@ public class Asteroid : MonoBehaviour {
 		
 		if (obj.CompareTag("Player")) {
 			float damage = col.relativeVelocity.magnitude * collisionDamageScale;
+           
 			Postcat postcat = obj.GetComponent<Postcat>();
-			FindObjectOfType<AudioManager>().Play("hitAsteroid");
 			postcat.ApplyDamage(damage);
 			postcat.Crash();
 

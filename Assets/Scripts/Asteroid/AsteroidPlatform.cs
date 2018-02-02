@@ -24,7 +24,7 @@ public class AsteroidPlatform : MonoBehaviour {
 
 		if (obj.CompareTag("Player")) {
 			Postcat postcat = obj.GetComponent<Postcat>();
-			FindObjectOfType<AudioManager>().Play("jump");
+			//FindObjectOfType<AudioManager>().Play("jump");
 			postcat.Jump();
 		}
 	}

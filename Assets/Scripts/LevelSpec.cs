@@ -14,7 +14,7 @@ public class LevelSpec : ScriptableObject {
     public LevelSpec(int levelNumber) {
         this.level = levelNumber;
         //Should be more than 1, 2+
-        lvlsMaxLenght = new[] { 2, 3, 6, 8, 11, 8, 9, 13 };
+        lvlsMaxLenght = new[] {3, 3, 6, 8, 11, 8, 9, 13 };
 
         GenerateLevel();
     }

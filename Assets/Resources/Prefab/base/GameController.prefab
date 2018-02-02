@@ -55,9 +55,9 @@ MonoBehaviour:
     type: 2}
   postcatPrefabWithCargo: {fileID: 4872919168094614, guid: fdc0d7da78e434191af2b03ca900e68d,
     type: 2}
-  levelSectionPrefab: {fileID: 4376414153753400, guid: cae23f7fafbadc74ca749357537fbfe1,
+  levelSectionPrefab: {fileID: 4678097301773110, guid: 526ac41d5e06b214db6bdd80c87b0593,
     type: 2}
   checkPointPrefab: {fileID: 4840635599273394, guid: 1df25a5c61a2e664cb7fda699448d76c,
     type: 2}
-  gameOverUI: {fileID: 0}
-  winUI: {fileID: 0}
+  gameOverUI: {fileID: 1644128754703566, guid: 060e529debe53e24aa375c35a7ac4fba, type: 2}
+  winUI: {fileID: 1151584540123730, guid: 56fc8c88b10a79a4183f2544b2290918, type: 2}
