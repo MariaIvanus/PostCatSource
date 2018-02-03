@@ -12,6 +12,7 @@ TagManager:
   - LevelRoot
   - Obstacle
   - LevelSection
+  - checkpoint
   layers:
   - Default
   - TransparentFX
