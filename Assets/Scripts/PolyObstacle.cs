@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PolyObstacle : MonoBehaviour {
 
-	public bool initializeOnStart = false;
+    public bool initializeOnStart = true;
 	public Transform[] choices;
 
 
@@ -25,7 +25,7 @@ public class PolyObstacle : MonoBehaviour {
 
 		Transform obj = choices[index];
         GameObject obstacle = Instantiate(obj, transform.position, obj.rotation).gameObject;
-
+        obstacle.transform.parent = transform;
         return obstacle;
 
     }
@@ -35,5 +35,6 @@ public class PolyObstacle : MonoBehaviour {
 		Gizmos.color = Color.gray;
 		Gizmos.DrawWireSphere(transform.position, 0.5f);
 	}
+
 
 }
