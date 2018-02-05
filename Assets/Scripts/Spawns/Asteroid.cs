@@ -46,7 +46,16 @@ public class Asteroid : MonoBehaviour {
 				
 			// }
 		}
-	}
+        if (obj.CompareTag("Cargo")) {
+            float damage = col.relativeVelocity.magnitude * collisionDamageScale;
+            //float m = other.otherRigidbody.velocity.magnitude;
+            //currenthealth -= m * damageScale;
+            Cargo cargo = obj.GetComponent<Cargo>();
+            cargo.Crash(damage);
+
+        }
+
+    }
 
 
 	void FixedUpdate() {

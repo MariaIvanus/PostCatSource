@@ -15,9 +15,12 @@ public class Game : MonoBehaviour {
     public int currentLevel;
     LevelGenerator levelGenerator;
     MainMenu menu;
+    GameObject hudUI;
     GameObject gameOverUI;
     GameObject winUI;
+    GameObject main_menu;
 
+    Cargo cargoClass;
     Postcat postcatClass;
     GameObject postcatObj;
     public Transform postcatPrefab;
@@ -39,10 +42,13 @@ public class Game : MonoBehaviour {
         startPointClass = startPoint.GetComponent<StartPoint>();
         endPointClass = endPoint.GetComponent<EndPoint>();
 
+
         levelGenerator = new LevelGenerator(currentLevel);
         menu = GameObject.Find("Menu").GetComponent<MainMenu>();
         gameOverUI = menu.transform.Find("GameOverUI").gameObject;
         winUI = menu.transform.Find("WinUI").gameObject;
+        hudUI = menu.transform.Find("Panel").gameObject;
+        //main_menu = menu.transform.Find("Main_Menu").gameObject;
         //InitBackground();
 
 
@@ -84,7 +90,8 @@ public class Game : MonoBehaviour {
         //Postcat postcat = postcatObj.GetComponentInChildren<Postcat>();
         //postcat.fuel = 100 + gameState.Take();
         postcatClass = postcatObj.GetComponentInChildren<Postcat>();
-
+        cargoClass = postcatObj.GetComponentInChildren<Cargo>();
+        cargoClass.currenthealth = cargoClass.maxhealth;
         // Set target for main camera.
         Camera.main.GetComponent<CameraController>().target = postcatObj.transform.GetChild(0);
         // Push Postcat away from the station.
@@ -176,10 +183,12 @@ public class Game : MonoBehaviour {
     }
     /*----------WIN-AND-OVER------------------*/
     public void ShowGameOver() {
+        Debug.Log("show go" + postcatClass.currentfuel);
         FindObjectOfType<AudioManager>().Stop("engine");
         FindObjectOfType<AudioManager>().Play("lose");
         PauseOn();
-        if (gameOverUI != null) { 
+        if (gameOverUI != null) {
+            hudUI.SetActive(false);
             gameOverUI.SetActive(true);
         }
         CleanUp();
@@ -189,6 +198,7 @@ public class Game : MonoBehaviour {
     public void HideGameOver() {
         if (gameOverUI.activeSelf == true) {
             gameOverUI.SetActive(false);
+            hudUI.SetActive(true);
         }
         PauseOff();
     }
@@ -197,6 +207,7 @@ public class Game : MonoBehaviour {
 
         if (winUI.activeSelf == true) {
             winUI.SetActive(false);
+            hudUI.SetActive(true);
         }
         PauseOff();
     }
@@ -206,20 +217,28 @@ public class Game : MonoBehaviour {
 
         playerSavedLevel = currentLevel;
         playerSavedFuel = postcatClass.currentfuel;
+        postcatClass.currentfuel = 10;
+        cargoClass.currenthealth = cargoClass.maxhealth;
+
+
         playerSavedCoin = 100;
         FindObjectOfType<AudioManager>().Stop("engine");
         FindObjectOfType<AudioManager>().Play("win");
     }
 
     public void ShowWinUI() {
-        OnWin();
+       
         PauseOn();
         if (winUI != null) {
+            hudUI.SetActive(false);
             winUI.SetActive(true);
             menu.ShowScore(playerSavedLevel, playerSavedFuel, playerSavedCoin);
         }
         CleanUp();
+        OnWin();
+        //
         ResetLevel();
+
     }
 
     /*----------CAT-VALUES------------------*/
@@ -241,7 +260,7 @@ public class Game : MonoBehaviour {
 
     public void DisplayHUD() {
         menu.DisplayLevel(currentLevel);
-        //menu.DisplayFuel(postcatClass.currentfuel);
+        menu.DisplayFuel(postcatClass.currentfuel,postcatClass.startfuel);
         //Debug.Log(postcatClass.currentfuel.ToString());
         //m
     }
@@ -304,10 +323,7 @@ public class Game : MonoBehaviour {
     postcatObj = GameObject.Find("GameController").GetComponent<GameController>().postcatObj;
     Destroy(postcatObj);
 
-    if (gameOverUI != null) {
-        gameOverUI.SetActive(false);
-    }
-
+ 
     //StartGame();
     PauseOff();
 }*/
@@ -331,9 +347,6 @@ public class Game : MonoBehaviour {
         postcatObj = GameObject.Find("GameController").GetComponent<GameController>().postcatObj;
         Destroy(postcatObj); 
 
-        if (gameOverUI != null) {
-            gameOverUI.SetActive(false);
-        }
         
         StartGame();
         PauseOff();
@@ -364,12 +377,7 @@ public class Game : MonoBehaviour {
     }
    
     
-    /*public void GameOver() {
-        // TODO: Play sound
-        PauseOn();
-        if (gameOverUI != null)
-            gameOverUI.SetActive(true);
-    }
+    /*
     public void StageCleared(float fuel, float cargoHealth, float offset) {
         gameState.StoreFuel(fuel);
         gameState.fuel += cargoHealth;

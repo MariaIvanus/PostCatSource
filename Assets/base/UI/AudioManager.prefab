@@ -112,3 +112,9 @@ MonoBehaviour:
     pitch: 1
     source: {fileID: 0}
     loop: 0
+  - name: cargocrash
+    clip: {fileID: 8300000, guid: 12f19f64aecd8f943bd2ea1378874c62, type: 3}
+    volume: 0.35
+    pitch: 1
+    source: {fileID: 0}
+    loop: 0

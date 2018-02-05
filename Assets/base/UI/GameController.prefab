@@ -271,7 +271,7 @@ MonoBehaviour:
   currentLevel: 0
   postcatPrefab: {fileID: 4797346997997604, guid: 29d336d16f81e854e8eb4b581366ce0b,
     type: 2}
-  postcatCargoPrefab: {fileID: 4872919168094614, guid: fdc0d7da78e434191af2b03ca900e68d,
+  postcatCargoPrefab: {fileID: 4872919168094614, guid: 40a65c6df28149a4f95b3000ac5366df,
     type: 2}
   backgroundPrefab: {fileID: 4995924223266110, guid: af99c16b3193f8f44a0ae5807acdbdfd,
     type: 2}

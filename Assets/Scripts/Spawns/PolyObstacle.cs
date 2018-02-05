@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PolyObstacle : MonoBehaviour {
 
-    bool initializeOnStart = false;
+    bool initializeOnStart = true;
 	public Transform[] choices;
 
 

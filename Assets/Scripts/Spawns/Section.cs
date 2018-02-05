@@ -7,7 +7,7 @@ public class Section : MonoBehaviour {
 
 
 
-    /*private List<GameObject> polyObstacles;
+    private List<GameObject> polyObstacles;
 
     private void Awake() {
 
