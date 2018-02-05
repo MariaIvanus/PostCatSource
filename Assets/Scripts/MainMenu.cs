@@ -12,6 +12,12 @@ public class MainMenu : MonoBehaviour {
     Text fuelText;
     Text coinsText;
     Text scoreText;
+
+    Animator fuelAnimator;
+    Animator boxAnimator;
+    Animator pauseAnimator;
+
+
     Game game;
     private void Start() {
         game = GameObject.Find("GameController").GetComponent<Game>();
@@ -19,14 +25,51 @@ public class MainMenu : MonoBehaviour {
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
         fuelText = GameObject.Find("Fuel2Text").GetComponent<Text>();
         coinsText = GameObject.Find("CoinsText").GetComponent<Text>();
-        
-
         fuelBar = GameObject.Find("FuelBar").GetComponent<Slider>();
 
-        if(fuelBar == null) {
-            Debug.Log("its null"); 
+        fuelAnimator = GameObject.Find("Oxygen").GetComponent<Animator>();
+        if (fuelAnimator == null) {
+            Debug.Log("sab1");
+        } else {
+            Debug.Log("ok");
+        }
+        boxAnimator = GameObject.Find("BoxHealth").GetComponent<Animator>();
+        if (boxAnimator == null) {
+            Debug.Log("sab22");
+        } else {
+            Debug.Log("ok");
+        }
+        pauseAnimator = GameObject.Find("PauseStopBtn").GetComponent<Animator>();
+        if (pauseAnimator == null) {
+            Debug.Log("sab");
+        } else {
+            Debug.Log("ok");
+        }
+
+
+    }
+    private bool isPaused;
+    public void PauseToggle() {
+        if (isPaused) {
+            PauseOff();
+        } else {
+            PauseOn();
         }
     }
+    public void PauseOn() {
+       // pauseAnimator.SetBool("Paused", true);
+        pauseAnimator.SetFloat("Blend", 1.0f);
+        game.PauseOn();
+        isPaused = true;
+    }
+
+    public void PauseOff() {
+        pauseAnimator.SetBool("Paused", false);
+        pauseAnimator.SetFloat("Blend", 0.0f);
+        game.PauseOff();
+        isPaused = false;
+    }
+
     public void SetMaxFuelBar(float maxValue) {
         fuelBar.maxValue = maxValue;
     }
@@ -59,12 +102,17 @@ public class MainMenu : MonoBehaviour {
         //coinsText = GameObject.Find("CoinsText").GetComponent<Text>();
     }
     public void DisplayFuel(float currentFuel) {
-        fuelBar.value = currentFuel;
-        fuelText.text = "Fuel: " + Mathf.RoundToInt(currentFuel).ToString();
-        Debug.Log(currentFuel.ToString());
+
+       /// fuelAnimator.SetFloat
+
+        //fuelBar.value = currentFuel;
+        // fuelText.text = "Fuel: " + Mathf.RoundToInt(currentFuel).ToString();
+        //animator.SetFloat("horizontal", h);
+        ///Debug.Log("fuel"+ currentFuel.ToString());
     }
     public void DisplayCoins(int currentCoins) {
         //coinsText.text = "Coins: " + currentCoins.ToString();
+        //Debug.Log("coins" + currentCoins.ToString());
     }
 
     public void PlayGame()
