@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Game : MonoBehaviour {
 
+    public float offset = 10f;
     public Transform startPoint;
     public Transform endPoint;
     public Transform sections;
@@ -14,13 +15,14 @@ public class Game : MonoBehaviour {
     public int currentLevel;
     LevelGenerator levelGenerator;
     MainMenu menu;
-    public GameObject gameOverUI;
-    public GameObject winUI;
+    GameObject gameOverUI;
+    GameObject winUI;
 
-    public Postcat postcatClass;
-    public GameObject postcatObj;
+    Postcat postcatClass;
+    GameObject postcatObj;
     public Transform postcatPrefab;
-    public GameObject backgroundObj;
+    public Transform postcatCargoPrefab;
+    GameObject backgroundObj;
     public Transform backgroundPrefab;
 
     private int playerSavedLevel;
@@ -30,7 +32,7 @@ public class Game : MonoBehaviour {
     private void Start() {
         FindObjectOfType<AudioManager>().Play("MainTheme");
 
-        currentLevel = 1;
+        currentLevel = 0;
         playerSavedFuel = 0;
 
         sectionsClass = sections.GetComponent<Sections>();
@@ -39,30 +41,65 @@ public class Game : MonoBehaviour {
 
         levelGenerator = new LevelGenerator(currentLevel);
         menu = GameObject.Find("Menu").GetComponent<MainMenu>();
-        gameOverUI= menu.transform.Find("GameOverUI").gameObject;
+        gameOverUI = menu.transform.Find("GameOverUI").gameObject;
         winUI = menu.transform.Find("WinUI").gameObject;
         //InitBackground();
+
+
         InitLevel();
         InitPlayer();
         SetCatValues();
         DisplayHUD();
     }
 
-    private void FixedUpdate() {
-        DisplayHUD();
 
-    }
 
     void InitPlayer() {
+        if (currentLevel <= -1) {
+            postcatObj = Instantiate(
+                    postcatPrefab,
+                    startPoint.transform.position,
+                    startPoint.transform.rotation).gameObject;
+
+            postcatClass = postcatObj.GetComponent<Postcat>();
+
+            Camera.main.GetComponent<CameraController>().target = postcatObj.transform;
+            postcatObj.GetComponent<Rigidbody2D>().AddForce(Vector3.right * 20.0f, ForceMode2D.Impulse);
+        }
+        else {
+            InitPlayerWithPackage();
+
+        }
+    }
+    public void InitPlayerWithPackage() {
+
+       // GameObject respawn = GameObject.FindGameObjectWithTag("Respawn");
+        Debug.Log("package");
         postcatObj = Instantiate(
-            postcatPrefab,
+            postcatCargoPrefab,
             startPoint.transform.position,
             startPoint.transform.rotation).gameObject;
-        postcatClass = postcatObj.GetComponent<Postcat>();
 
-        Camera.main.GetComponent<CameraController>().target = postcatObj.transform;
-        postcatObj.GetComponent<Rigidbody2D>().AddForce(Vector3.right * 20.0f, ForceMode2D.Impulse);
+        // Get fuel from station.
+        //Postcat postcat = postcatObj.GetComponentInChildren<Postcat>();
+        //postcat.fuel = 100 + gameState.Take();
+        postcatClass = postcatObj.GetComponentInChildren<Postcat>();
+
+        // Set target for main camera.
+        Camera.main.GetComponent<CameraController>().target = postcatObj.transform.GetChild(0);
+        // Push Postcat away from the station.
+        foreach (Rigidbody2D rb in postcatObj.GetComponentsInChildren<Rigidbody2D>())
+            rb.AddForce(Vector3.right * 10.0f, ForceMode2D.Impulse);
     }
+
+
+
+
+
+
+
+
+
     void InitBackground() {
         backgroundObj = Instantiate(backgroundPrefab, Vector3.zero, Quaternion.identity).gameObject;
     }
@@ -72,16 +109,16 @@ public class Game : MonoBehaviour {
     }
 
     void DrawLevel() {
-        startPointClass.createStartPoint();
+        startPointClass.createStartPoint(Vector3.zero);
 
-        float sectionsPositoinX = startPoint.transform.position.x + startPoint.GetComponent<BoxCollider2D>().bounds.size.x / 2;
+        float sectionsPositoinX = offset + startPoint.transform.position.x + startPoint.GetComponent<BoxCollider2D>().bounds.size.x / 2;
         sections.transform.position = new Vector3(sectionsPositoinX, 0f, 0f);
 
         levelGenerator = new LevelGenerator(currentLevel);
         sectionsClass.CreateSections(levelGenerator.maxSectionNumber);
 
         endPointClass.createEndPoint();
-        float endPointPositionX = sectionsClass.SectionsEndPostionX();
+        float endPointPositionX = offset + sectionsClass.SectionsEndPostionX();
         endPoint.transform.position = new Vector3(endPointPositionX, 0f, 0f);
         endPointClass.SetPosition();
     }
@@ -91,25 +128,32 @@ public class Game : MonoBehaviour {
         DrawLevel();
        
     }
+    // TODO: FIX THAT
+    public void LoadNextLevel() {
+        OnWin();
+        sectionsClass.CleanUp();
+        startPointClass.CleanUp();
+        //move start point and children
 
-    void SetCatValues() {
-        getMaxFuel();
+        startPoint.transform.position = endPoint.transform.position; ;
+        startPointClass.createStartPoint(startPoint.transform.position);
+
+        float sectionsPositoinX = offset + startPoint.transform.position.x + startPoint.GetComponent<BoxCollider2D>().bounds.size.x / 2;
+        sections.transform.position = new Vector3(sectionsPositoinX, 0f, 0f);
+
+        levelGenerator = new LevelGenerator(currentLevel);
+        sectionsClass.CreateSections(levelGenerator.maxSectionNumber);
+        endPointClass.CleanUp();
+        endPointClass.createEndPoint();
+        float endPointPositionX = offset + sectionsClass.SectionsEndPostionX();
+        endPoint.transform.position = new Vector3(endPointPositionX, 0f, 0f);
+        endPointClass.SetPosition();
+
+        SetCatValues();
+        DisplayHUD();
     }
 
-    public float getMaxFuel() {
-        float tempFuel = levelGenerator.giveInitialFuel();
-        tempFuel += playerSavedFuel;
-        
-        menu.SetMaxFuelBar(tempFuel);
-        return tempFuel;
-    }
-
-    public void DisplayHUD() {
-        menu.DisplayLevel(currentLevel);
-        menu.DisplayFuel(postcatClass.currentfuel);
-        //Debug.Log(postcatClass.currentfuel.ToString());
-        //m
-    }
+    
 
     public void CleanUp() {
         sectionsClass.CleanUp();
@@ -130,9 +174,9 @@ public class Game : MonoBehaviour {
         DisplayHUD();
 
     }
-
+    /*----------WIN-AND-OVER------------------*/
     public void ShowGameOver() {
-        Debug.Log("Game Over");
+        FindObjectOfType<AudioManager>().Stop("engine");
         FindObjectOfType<AudioManager>().Play("lose");
         PauseOn();
         if (gameOverUI != null) { 
@@ -156,18 +200,21 @@ public class Game : MonoBehaviour {
         }
         PauseOff();
     }
-    public void ShowWinUI() {
+
+    private void OnWin() {
         currentLevel++;
 
         playerSavedLevel = currentLevel;
         playerSavedFuel = postcatClass.currentfuel;
         playerSavedCoin = 100;
-
-        Debug.Log("Next Level");
+        FindObjectOfType<AudioManager>().Stop("engine");
         FindObjectOfType<AudioManager>().Play("win");
+    }
+
+    public void ShowWinUI() {
+        OnWin();
         PauseOn();
         if (winUI != null) {
-            
             winUI.SetActive(true);
             menu.ShowScore(playerSavedLevel, playerSavedFuel, playerSavedCoin);
         }
@@ -175,7 +222,29 @@ public class Game : MonoBehaviour {
         ResetLevel();
     }
 
+    /*----------CAT-VALUES------------------*/
 
+    private void FixedUpdate() {
+        DisplayHUD();
+    }
+    void SetCatValues() {
+        getMaxFuel();
+    }
+
+    public float getMaxFuel() {
+        float tempFuel = levelGenerator.giveInitialFuel();
+        tempFuel += playerSavedFuel;
+
+        menu.SetMaxFuelBar(tempFuel);
+        return tempFuel;
+    }
+
+    public void DisplayHUD() {
+        menu.DisplayLevel(currentLevel);
+        //menu.DisplayFuel(postcatClass.currentfuel);
+        //Debug.Log(postcatClass.currentfuel.ToString());
+        //m
+    }
 
     /*private void Destroy(GameObject toDestroy) {
         if(toDestroy != null) {
@@ -273,23 +342,27 @@ public class Game : MonoBehaviour {
 
 
 
-        
+
     private bool isPaused;
-    public void PauseOn() {
-        Time.timeScale = 0.0f;
-        isPaused = true;
-    }
-    public void PauseOff() {
-        Time.timeScale = 1.0f;
-        isPaused = false;
-    }
     public void PauseToggle() {
-        if(isPaused) {
+        if (isPaused) {
             PauseOff();
         } else {
             PauseOn();
         }
     }
+
+    public void PauseOn() {
+        Time.timeScale = 0.0f;
+        isPaused = true;
+        //menu.PauseOn();
+    }
+    public void PauseOff() {
+        Time.timeScale = 1.0f;
+        isPaused = false;
+        //menu.PauseOff();
+    }
+   
     
     /*public void GameOver() {
         // TODO: Play sound

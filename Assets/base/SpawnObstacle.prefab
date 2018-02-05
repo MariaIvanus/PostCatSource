@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f17f0b7849b8d4f802d7a24d46488f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initializeOnStart: 0
+  initializeOnStart: 1
   choices:
   - {fileID: 4760545579513080, guid: d97f57f508e6e459c9b84043f6eb663d, type: 2}
   - {fileID: 4620066791143762, guid: e60808770f56640cfb477250803a0831, type: 2}

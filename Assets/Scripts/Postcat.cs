@@ -16,7 +16,7 @@ public class Postcat : MonoBehaviour {
     public float speedScale = 10.0f;
 	public float maxSpeed = 10.0f;
 	public float consumption = 0.1f;
-	public float jumpForce = 10.0f;
+	public float jumpForce = 4.0f;
 
 	public float yBound = 8.0f;
 	public float reboundForce = 1.0f;
@@ -26,8 +26,19 @@ public class Postcat : MonoBehaviour {
 	Animator animator;
 	Game gameController;
 
+    private bool moveAllowed = true;
 
-	void Awake() {
+    public bool MoveAllowed {
+        get {
+            return moveAllowed;
+        }
+
+        set {
+            moveAllowed = value;
+        }
+    }
+
+    void Awake() {
         rb = GetComponent<Rigidbody2D>();
 		animator = GetComponentInChildren<Animator>();
 		gameController = GameObject
@@ -35,54 +46,55 @@ public class Postcat : MonoBehaviour {
 			.gameObject
 			.GetComponent<Game>();
 
-        startfuel = gameController.getMaxFuel();
+        startfuel = 500;//gameController.getMaxFuel();
         currentfuel = startfuel;
 
 	}
 	
 
 	void FixedUpdate () {
+        if (moveAllowed) {
+            float h = Mathf.Max(0.0f, Input.GetAxis("Horizontal"));
+            float v = Input.GetAxis("Vertical");
+            Vector3 movement = new Vector3(h, v, 0.0f);
 
-		float h = Mathf.Max(0.0f, Input.GetAxis("Horizontal"));
-		float v = Input.GetAxis("Vertical");
-		Vector3 movement = new Vector3(h, v, 0.0f);
+            animator.SetFloat("horizontal", h);
+            animator.SetFloat("vertical", v);
 
-		animator.SetFloat("horizontal", h);
-		animator.SetFloat("vertical", v);
+            EngineSoundHandler();
 
-        EngineSoundHandler();
+            if (currentfuel > 0) {
 
-        if (currentfuel > 0) {
+                if (transform.position.y >= yBound) {
+                    rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
+                    rb.AddForce(Vector3.up * -reboundForce);
+                } else if (transform.position.y <= -yBound) {
+                    rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
+                    rb.AddForce(Vector3.up * reboundForce);
+                } else {
+                    rb.AddForce(movement * speedScale);
+                }
 
-            if (transform.position.y >= yBound) {
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
-                rb.AddForce(Vector3.up * -reboundForce);
-            } else if (transform.position.y <= -yBound) {
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, clampVelScale);
-                rb.AddForce(Vector3.up * reboundForce);
+                rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+
+                if (movement.magnitude > 0) {
+                    currentfuel -= consumption;
+                }
+
             } else {
-                rb.AddForce(movement * speedScale);
+                gameController.ShowGameOver();
+                //currentfuel = startfuel;
             }
+            /*If no btn pressed - restore fuel
+            if(h==0 && v ==0) {
+                fuel += 0.01f * Time.deltaTime;
+            }*/
 
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+            /* Надо логикой топлива еще нужно поработать отдельно, его нельзя подбирать, не восполняется со временем!(а должно) Геймовер не наступает.
+             * И игрок должен все время двигаться, просто с минимальной скоростью, топливо для рывка и ускорения.
 
-            if (movement.magnitude > 0) {
-                currentfuel -= consumption;
-            }
-
-        } else {
-            gameController.ShowGameOver();
-            //currentfuel = startfuel;
+            */
         }
-        /*If no btn pressed - restore fuel
-        if(h==0 && v ==0) {
-            fuel += 0.01f * Time.deltaTime;
-        }*/
-
-        /* Надо логикой топлива еще нужно поработать отдельно, его нельзя подбирать, не восполняется со временем!(а должно) Геймовер не наступает.
-         * И игрок должен все время двигаться, просто с минимальной скоростью, топливо для рывка и ускорения.
-
-        */
 
     }
 
@@ -93,8 +105,9 @@ public class Postcat : MonoBehaviour {
     }
 
 	public void Refuel(float fuelAmount) {
-		currentfuel += fuelAmount;        
-	}
+		currentfuel += fuelAmount;
+        FindObjectOfType<AudioManager>().Play("refuel");
+    }
 
 	public void Jump() {
 		rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);

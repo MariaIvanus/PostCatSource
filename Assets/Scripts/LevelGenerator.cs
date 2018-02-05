@@ -15,7 +15,7 @@ public class LevelGenerator {
 
         this.level = levelNumber;
 
-        lvlsMaxLenght = new[] { 3, 5, 7, 8, 11, 8, 9, 13 };
+        lvlsMaxLenght = new[] { 2, 5, 7, 8, 11, 8, 9, 13 };
 
         GenerateLevel();
     }
