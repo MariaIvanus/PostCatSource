@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 70074384392028982}
   - component: {fileID: 50397248815987410}
   - component: {fileID: 233912756202610154}
-  - component: {fileID: 114901375922740604}
+  - component: {fileID: 114155586812360040}
   m_Layer: 0
   m_Name: RopeSegment
   m_TagString: Rope
@@ -108,7 +108,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0.5, y: 0}
   m_Size: {x: 1, y: 0.12}
   m_Direction: 1
---- !u!114 &114901375922740604
+--- !u!114 &114155586812360040
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -116,7 +116,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1059118343702536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13d21167f0a972b409a1684a2b40caed, type: 3}
+  m_Script: {fileID: 11500000, guid: 1996ec01761760e449a6443e9d8d1b68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212276726544284438
@@ -172,7 +172,7 @@ HingeJoint2D:
   m_Enabled: 1
   serializedVersion: 4
   m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 50053856853900890, guid: 546369d454ef24137a44ea362aca3bba,
+  m_ConnectedRigidBody: {fileID: 50336529360903544, guid: 546369d454ef24137a44ea362aca3bba,
     type: 2}
   m_BreakForce: Infinity
   m_BreakTorque: Infinity

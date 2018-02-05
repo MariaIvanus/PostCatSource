@@ -210,34 +210,25 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114362339885437942, guid: 9af27a2322142fa4e85ddaac22defbd5,
+        type: 2}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1568932268}
     - target: {fileID: 114433455798818402, guid: 9af27a2322142fa4e85ddaac22defbd5,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2046430877}
-    - target: {fileID: 224037351714071882, guid: 9af27a2322142fa4e85ddaac22defbd5,
-        type: 2}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224037351714071882, guid: 9af27a2322142fa4e85ddaac22defbd5,
+    - target: {fileID: 224534051810462278, guid: 9af27a2322142fa4e85ddaac22defbd5,
         type: 2}
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 224342100805435914, guid: 9af27a2322142fa4e85ddaac22defbd5,
-        type: 2}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224342100805435914, guid: 9af27a2322142fa4e85ddaac22defbd5,
+    - target: {fileID: 224987585891159042, guid: 9af27a2322142fa4e85ddaac22defbd5,
         type: 2}
       propertyPath: m_AnchorMax.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1404584904962186, guid: 9af27a2322142fa4e85ddaac22defbd5, type: 2}
-      propertyPath: m_Name
-      value: PauseStopBtn
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9af27a2322142fa4e85ddaac22defbd5, type: 2}
@@ -368,6 +359,12 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 58b9c420d7db91b46b26421f172f091c, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &1568932268 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114812622880135334, guid: 769b3aa9e52f6b34987a38421856abc9,
+    type: 2}
+  m_PrefabInternal: {fileID: 1719777836}
+  m_Script: {fileID: 11500000, guid: 41d1319fb068776489baa607889bd72a, type: 3}
 --- !u!1001 &1719777836
 Prefab:
   m_ObjectHideFlags: 0

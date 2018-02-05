@@ -22,7 +22,7 @@ public class LevelGenerator {
 
     public float giveInitialFuel() {
         if (dificulty == "easy") {
-            inititalFuel = totalSections * 30;
+            inititalFuel = totalSections * 45;
         }
 
 

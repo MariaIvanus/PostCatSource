@@ -11,8 +11,10 @@ public class PreStation : MonoBehaviour {
         if (obj.CompareTag("Player") ) {
 
             FindObjectOfType<AudioManager>().Stop("engine");
-            obj.GetComponent<Postcat>().MoveAllowed = false;
-            obj.GetComponentInChildren<Animator>().SetBool("Station", true);
+
+            //TODO: fix precat scene
+            //obj.GetComponent<Postcat>().MoveAllowed = false;
+            //obj.GetComponentInChildren<Animator>().SetBool("Station", true);
         }
 
     }
@@ -21,6 +23,7 @@ public class PreStation : MonoBehaviour {
         GameObject obj = collision.gameObject;
         if (this.transform.parent.gameObject.name != "StartPoint" && (obj.CompareTag("Player"))) {
             Debug.Log("cat stop2");
+            //TODO: fix delay loading;
             //FindObjectOfType<Game>().LoadNextLevel();
             FindObjectOfType<Game>().ShowWinUI();
         }
